@@ -1,15 +1,17 @@
 from typing import List
 from langchain_core.documents import Document
 from langchain_community.vectorstores import Chroma
-from langchain_community.embeddings import FakeEmbeddings # Substitute with OpenAI/Local
-from langchain_community.chat_models import FakeListChatModel
+from langchain_openai import OpenAIEmbeddings, ChatOpenAI
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 class ChatbotEngine:
     def __init__(self):
-        # We'll use Chroma in-memory/local and a Fake embeddings/model for boilerplate
-        self.embeddings = FakeEmbeddings(size=1536)
+        self.embeddings = OpenAIEmbeddings(model="text-embedding-3-small")
         self.vector_store = Chroma(embedding_function=self.embeddings, persist_directory="./chroma_db")
-        self.llm = FakeListChatModel(responses=["This is a mock LLM response based on context."])
+        self.llm = ChatOpenAI(model="gpt-3.5-turbo", temperature=0)
 
     def add_documents(self, documents: List[Document]):
         if documents:
